@@ -21,30 +21,29 @@ model = PPO('MlpPolicy', env=env, verbose=1)
 # "learn" method calls "step" method in an environment
 print('checking')
 #model.learn(total_timesteps=100000, callback=eval_callback)
-model.learn(total_timesteps=50000)
+model.learn(total_timesteps=1000000)
 
 # Save the weights
 # Additional assignment : How do I save the policy network that returned the best reward value during training, not the result of learning over 400,000 timesteps?
 # Tip : Let's use the callback function for the learn method
-# model.save("ppo_manipulator2D")
+model.save("ppo_manipulator2D")
 
 # Delete the model variable from the memory
-# del model  # remove to demonstrate saving and loading
+del model  # remove to demonstrate saving and loading
 
 # Load the weights from the saved training file
 model = PPO.load("ppo_manipulator2D")
 
 # Reset the simulation environment
 obs = env.reset()
-print('check4')
-cnt=0
-while True:
-    action, _states = model.predict(obs)
-    obs, rewards, dones, info = env.step(action)
-    if cnt%1000==0:
-        env.render()
 
-    cnt+=1
-    if dones:
+while True:
+    # The trained model returns action values using the current observation
+    action, _states = model.predict(obs)
+    obs, reward, done, info = env.step(action)
+    cnt=0
+
+    if done:
         break
+
 env.render()
